@@ -1,0 +1,53 @@
+<h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">
+    Results
+</h2>
+<!-- Icon Divider-->
+<div class="divider-custom">
+    <div class="divider-custom-line"></div>
+    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+    <div class="divider-custom-line"></div>
+</div>
+
+<!-- Results table -->
+<table id="results-table" class="table table-bordered">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">
+                Vertices count
+            </td>
+            <td>
+                {{ vertices_count }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                Lines count
+            </td>
+            <td>
+                {{ lines_count }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                Polygon points
+            </td>
+            <td>
+                {{ polygon_points }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                Intersection points
+            </td>
+            <td>
+                {% if intersection_points %}
+                    {{ intersection_points }}
+                {% else %}
+                    --
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<img class="img-center" alt="embedded" src="data:image/png;base64,{{inline_png}}" />

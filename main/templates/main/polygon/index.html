@@ -1,0 +1,128 @@
+{% extends 'main/base.html' %}
+
+{% block header %}
+    <div class="container d-flex align-items-center flex-column">
+        <!-- Masthead Avatar Image
+        <img class="masthead-avatar mb-5" src="assets/img/avataaars.svg" alt="" />
+        -->
+        <!-- Masthead Heading-->
+        <h1 class="masthead-heading text-uppercase mb-0">
+            Polygon
+        </h1>
+        <!-- Icon Divider-->
+        <div class="divider-custom divider-light">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+            <div class="divider-custom-line"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<!-- Contact Section-->
+<section class="page-section" id="page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form id="input-form" method="post">
+                    {% csrf_token %}
+                    <table id="input-table" class="table table-bordered">
+                        <thead>
+                            <tr style="height: 60px">
+
+                                <th class="text-center text-uppercase">
+                                    Количество вершин
+                                </th>
+
+                                <th class="text-center text-uppercase">
+                                    Количество прямых линий
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input id='points_count' name="points_count" type="number" value="5">
+                                </td>
+                                <td>
+                                    <input id="lines_count" name="lines_count" type="number" value="3">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group">
+                        <a id="calculate-btn" class="btn btn-primary btn-sm" href="#">
+                            Calculate
+                        </a>
+                        <a id="random-btn" class="btn btn-primary btn-sm" href="#">
+                            Random
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto mt-5" id="results-content">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+$(document).ready(function (){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var calculate_btn = $('#calculate-btn');
+    var input_form = $('#input-form');
+    var random_btn = $('#random-btn');
+    var request_url = '{% url "polygon" %}';
+    var results_content = $('#results-content');
+
+    function randomInteger(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    calculate_btn.click(function (e){
+        $('#points_count').removeClass('bg-warning');
+        $('#lines_count').removeClass('bg-warning');
+
+        e.preventDefault();
+
+        if ($('#points_count').val() < 3){
+            $('#points_count').addClass('bg-warning');
+            alert('Please, notice: to draw a POLYGON you have to provide at least value of 3 points !!!');
+            return;
+        }
+
+        if ($('#lines_count').val() <= 0){
+            $('#lines_count').addClass('bg-warning');
+            alert('Please, provide at least one line!!!');
+            return;
+        }
+
+        formData = input_form.serializeArray();
+
+        $.ajax({
+            headers: {'X-CSRFToken': csrftoken},
+            type: 'POST',
+            url: request_url,
+            data: {
+                "formData" : JSON.stringify(formData),
+            },
+            success: function (response){
+                results_content.html(response);
+            },
+        });
+    });
+
+    random_btn.click(function (e){
+        e.preventDefault();
+        $.each($('input'), function (e){
+            $(this).val(randomInteger(3, 8));
+        });
+    });
+
+});
+</script>
+{% endblock %}

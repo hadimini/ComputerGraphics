@@ -1,0 +1,70 @@
+<h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">
+    Results
+</h2>
+<!-- Icon Divider-->
+<div class="divider-custom">
+    <div class="divider-custom-line"></div>
+    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+    <div class="divider-custom-line"></div>
+</div>
+<!-- Results table -->
+<table id="results-table" class="table table-bordered">
+    <tbody>
+        <tr>
+            <td class="font-weight-bold">
+                X
+            </td>
+            <td>
+                {{ x_vals }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                Y
+            </td>
+            <td>
+                {{ y_vals }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                C
+            </td>
+            <td>
+                {{ c_value }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                Matrix M
+            </td>
+            <td>
+                {{ m_matrix }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                λ1, λ2
+            </td>
+            <td>
+                {{ eigen_vals }}
+            </td>
+        </tr>
+        <tr>
+            <td class="font-weight-bold">
+                N1, N2
+            </td>
+            <td>
+                {{ eigen_vecs }}
+            </td>
+        </tr>
+
+
+        <tr>
+            <td colspan="2">
+                <img class="img-center" alt="embedded" src="data:image/png;base64,{{inline_png}}" />
+            </td>
+        </tr>
+
+    </tbody>
+</table>

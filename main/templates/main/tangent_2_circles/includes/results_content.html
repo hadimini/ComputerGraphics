@@ -1,0 +1,53 @@
+<h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">
+    Results
+</h2>
+<!-- Icon Divider-->
+<div class="divider-custom">
+    <div class="divider-custom-line"></div>
+    <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+    <div class="divider-custom-line"></div>
+</div>
+{% if error %}
+    <h4 class="text-center bg-warning text-white p-4">
+        Cannot draw internal tangents cause distance is {{ distance }}!  <br /> Please use other values!'
+    </h4>
+{% else %}
+    <!-- Results table -->
+    <table id="results-table" class="table table-bordered">
+        <tbody>
+            <tr>
+                <td class="font-weight-bold">
+                    Intersection of inner tangent lines:
+                </td>
+                <td>
+                    {{ xyo }}
+                </td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">
+                    Inner lines tangent points:
+                </td>
+                <td>
+                    {{ xyt1 }} - {{ xyt2 }} - {{ xyt3 }} - {{ xyt4 }}
+                </td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">
+                    Distance between circles
+                </td>
+                <td>
+                    {{ distance }}
+                </td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">
+                    Distance C1(x1, y1) - C2(x2, y2)
+                </td>
+                <td>
+                    {{ distance_centers }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endif %}
+<img class="img-center" alt="embedded" src="data:image/png;base64,{{inline_png}}" />

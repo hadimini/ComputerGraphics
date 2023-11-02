@@ -1,0 +1,259 @@
+{% extends 'main/base.html' %}
+{% load numeric_helpers %}
+{% load widget_tweaks %}
+
+{% block content %}
+<!-- Main Section-->
+<section class="page-section" id="contact">
+    <div class="container">
+        <!-- Contact Section Heading-->
+        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Data</h2>
+        <!-- Icon Divider-->
+        <div class="divider-custom">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+            <div class="divider-custom-line"></div>
+        </div>
+        <!-- Contact Section Form-->
+        <div class="row">
+            <div class="col-lg-12 mx-auto">
+                {% if not result %}
+                    <form id="data_form" action="" method="post">
+                        {% csrf_token %}
+                        <table id="data_table" class="table table-bordered">
+                            <tr style="height: 60px">
+                                <td class="text-center position-relative">
+
+                                </td>
+                                <td class="text-center position-relative">
+                                    D1
+                                </td>
+                                <td class="text-center position-relative">
+                                    D2
+                                </td>
+                                <td class="text-center position-relative">
+                                    D3
+                                </td>
+                                <td class="text-center position-relative">
+                                    Supply
+                                </td>
+                            </tr>
+                            <tr style="height: 60px">
+                                <td class="text-center position-relative">
+                                    S1
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_1_1" value="4">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_1_2" value="3">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_1_3" value="8">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="s_1" value="300">
+                                </td>
+                            </tr>
+                            <tr style="height: 60px">
+                                <td class="text-center position-relative">
+                                    S2
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_2_1" value="7">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_2_2" value="5">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_2_3" value="9">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="s_2" value="300">
+                                </td>
+
+                            </tr>
+                            <tr style="height: 60px">
+                                <td class="text-center position-relative">
+                                    S3
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_3_1" value="4">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_3_2" value="5">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="c_3_3" value="5">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="s_3" value="100">
+                                </td>
+                            </tr>
+
+                            <!-- Demand vals -->
+                            <tr style="height: 60px">
+                                <td class="text-center position-relative">
+                                    Demand
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="d_1" value="200">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="d_2" value="200">
+                                </td>
+                                <td class="text-center position-relative">
+                                    <input type="number" name="d_3" value="300">
+                                </td>
+
+                                <td class="text-center position-relative">
+                                    <a href="#" id="add_row">
+                                        + Row
+                                    </a>
+                                    |
+                                    <a href="#" id="add_col">
+                                        + Col
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-lg" name="submit" id="submit" type="submit">
+                                Calculate
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="form-group">
+                        <a class="btn btn-primary btn-lg" href="{% url 'home' %}">
+                            Reset
+                        </a>
+                    </div>
+                    <table class="table table-bordered">
+                        {% for row in table_size.rows %}
+                            <tr style="height: 60px">
+                                {% for col in table_size.cols %}
+                                    {% get_cell_allocated_value_np final_solution row col as cell_value %}
+                                    <td class="text-center position-relative">
+                                        {% get_cell_cost balanced_costs row col as cell_cost %}
+                                        <span class="position-absolute text-danger" style="top: 1px; left: 2px; font-size: 12px">
+                                            {{ cell_cost }}
+                                        </span>
+                                        {% if cell_value %}
+                                            <span class="figure-caption">
+                                                {{ cell_value }}
+                                            </span>
+                                        {% else %}
+                                            <i class="fa fa-slash"></i>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <span class="text-center">
+                        Solution:
+                        {{ total_cost }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block additional_scripts %}
+<script>
+
+$(document).ready(function(){
+    var table = $('#data_table');
+    var form = $('#data_form');
+
+    function generate_cols(rowsCount, colsCount){
+        var html = '<tr>';
+        var td;
+
+        console.log('rowsCount`'+rowsCount);
+
+        // html += content_to_td('S' + (rowsCount + 1));
+        html += '<td class="text-center position-relative">S' + (rowsCount + 1)+'</td>';
+
+        for (td = 1; td <= colsCount; td++) {
+            html += '<td class="text-center position-relative">';
+            html += '<input type="number" name="c_'+(rowsCount + 1)+'_'+ td +'" value="">';
+            html += '</td>';
+        }
+
+        // add an empty td for new supply
+        html += '<td class="text-center position-relative"><input type="number" name="s_'+(rowsCount + 1)+'" value=""></td>';
+        html += '</tr>';
+
+        return html
+    }
+
+    // CHECK EMPTY VALS
+    $('#submit').click(function (e){
+        {##}
+        if($("input").filter(function () {return $.trim($(this).val()).length == 0}).length != 0){
+            e.preventDefault();
+            alert('!!Empty vals ');
+        }
+        else {
+            form[0].dispatchEvent(new Event('submit'));
+        }
+    });
+
+    $('#add_row').on('click', function (e){
+        e.preventDefault();
+
+        var colsCount = table.find('tr:first td').length;
+        var rowsCount = table.find('tr').length;
+
+        var lastRow = $('#data_table tr:last').prev();
+
+        // append new row
+
+        lastRow.after(generate_cols(rowsCount -2, colsCount - 2));
+    })
+
+    $('#add_col').on('click', function (e){
+        e.preventDefault();
+
+        var colsCount = table.find('tr:first td').length;
+        var rowsCount = table.find('tr').length;
+
+        // append new col
+
+        var i = 1;
+
+        table.find('tr').each(function (){
+
+            var content = '';
+
+            if (i === 1) {
+                content = '<td class="text-center position-relative">D' + (colsCount - 1) + '</td>'
+            }
+
+            else {
+                content = '<td class="text-center position-relative">';
+                if (i !== rowsCount) {
+                    content += '<input type="number" title="C(' + (i - 1) + ', '+(colsCount -1 )+')" name="c_' + (i - 1) + '_' +(colsCount - 1)+'" value="">';
+                }
+                else {
+                    content += '<input type="number" title="d_' + (colsCount - 1) +'" name="d_' + (colsCount - 1) +'" value="">';
+                }
+
+                content += '</td>';
+                console.log('i: ', i, ' c_', i-1, '_', colsCount - 1);
+            }
+
+            console.log('i: '+i, ' colsCount: '+colsCount, ' rosCount: '+rowsCount);
+            i ++;
+
+            $(this).find('td').eq(colsCount - 2).after(content);
+
+        });
+    })
+});
+</script>
+{% endblock %}

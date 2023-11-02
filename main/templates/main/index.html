@@ -1,0 +1,103 @@
+{% extends 'main/base.html' %}
+{% load numeric_helpers %}
+{% load widget_tweaks %}
+
+
+
+{% block content %}
+<!-- Main Section-->
+    <section class="page-section" id="contact">
+        <div class="container">
+            <!-- Contact Section Heading-->
+            <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Data</h2>
+            <!-- Icon Divider-->
+            <div class="divider-custom">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <form name="" action="" method="post">
+                        {% csrf_token %}
+                        {% for hidden_field in form.hidden_fields %}
+                            {{ hidden_field }}
+                          {% endfor %}
+
+                          {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                              {% for error in form.non_field_errors %}
+                                {{ error }}
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+
+                          {% for field in form.visible_fields %}
+                              {{ field.value }}
+                            <div class="form-group">
+                              {{ field.label_tag }}
+
+                              {% if form.is_bound %}
+                                {% if field.errors %}
+                                  {% render_field field class="form-control is-invalid" %}
+                                  {% for error in field.errors %}
+                                    <div class="invalid-feedback">
+                                      {{ error }}
+                                    </div>
+                                  {% endfor %}
+                                {% else %}
+                                  {% render_field field class="form-control is-valid" %}
+                                {% endif %}
+                              {% else %}
+                                {% render_field field class="form-control" %}
+                              {% endif %}
+
+                              {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                              {% endif %}
+                            </div>
+                          {% endfor %}
+
+                    <input type="text" name="supply" value="[]" class="form-control" required="">
+                    <input type="text" name="supply" value="[]" class="form-control" required="">
+                    <input type="text" name="supply" value="[]" class="form-control" required="">
+
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-xl" name="submit" id="submint" type="submit">
+                                    Send
+                                </button>
+                            </div>
+                    </form>
+
+                    <table class="table table-bordered">
+                        {% for row in table_size.rows %}
+                            <tr style="height: 60px">
+                                {% for col in table_size.cols %}
+                                    {% get_cell_allocated_value_np final_solution row col as cell_value %}
+                                    <td class="text-center position-relative">
+                                        {% get_cell_cost balanced_costs row col as cell_cost %}
+                                        <span class="position-absolute text-danger" style="top: 1px; left: 2px; font-size: 12px">
+                                            {{ cell_cost }}
+                                        </span>
+                                        {% if cell_value %}
+                                            <span class="figure-caption">
+                                                {{ cell_value }}
+                                            </span>
+                                        {% else %}
+                                            <i class="fa fa-slash"></i>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <span class="text-center">
+                        Solution:
+                        {{ total_cost }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

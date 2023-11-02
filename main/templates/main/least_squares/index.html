@@ -1,0 +1,189 @@
+{% extends 'main/base.html' %}
+
+{% block header %}
+    <div class="container d-flex align-items-center flex-column">
+        <!-- Masthead Avatar Image
+        <img class="masthead-avatar mb-5" src="assets/img/avataaars.svg" alt="" />
+        -->
+        <!-- Masthead Heading-->
+        <h1 class="masthead-heading text-uppercase mb-0">
+            Least Squares Method
+        </h1>
+        <!-- Icon Divider-->
+        <div class="divider-custom divider-light">
+            <div class="divider-custom-line"></div>
+            <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+            <div class="divider-custom-line"></div>
+        </div>
+        <!-- Masthead Subheading-->
+{#        <p class="masthead-subheading font-weight-light mb-0">Graphic Artist - Web Designer - Illustrator</p>#}
+    </div>
+{% endblock %}
+
+{% block content %}
+<!-- Contact Section-->
+<section class="page-section" id="page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form id="input-form" method="post">
+                    {% csrf_token %}
+                    <table id="input-table" class="table table-bordered">
+                        <thead>
+                            <tr style="height: 60px">
+                                <th class="text-center text-uppercase">
+                                    x
+                                </th>
+                                <th class="text-center text-uppercase">
+                                    y
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input name="x_1" type="number" value="1">
+                                </td>
+                                <td>
+                                    <input name="y_1" type="number" value="3">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input name="x_2" type="number" value="3">
+                                </td>
+                                <td>
+                                    <input name="y_2" type="number" value="2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input name="x_3" type="number" value="-1">
+                                </td>
+                                <td>
+                                    <input name="y_3" type="number" value="1">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group">
+                        <a id="add-point-btn" class="btn btn-primary btn-sm" href="#">
+                            Add point
+                        </a>
+
+                        <a id="calculate-btn" class="btn btn-primary btn-sm" href="#">
+                            Calculate
+                        </a>
+
+                        <a id="random-btn" class="btn btn-primary btn-sm" href="#">
+                            Random
+                        </a>
+
+                        <a id="reset-btn" class="btn btn-primary btn-sm" href="#">
+                            Reset
+                        </a>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto mt-5" id="results-content">
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+$(document).ready(function (){
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    var add_point_btn = $('#add-point-btn');
+    var calculate_btn = $('#calculate-btn');
+    var input_form = $('#input-form');
+    var input_table = $('#input-table');
+    var random_btn = $('#random-btn');
+    var request_url = '{% url "least_squares" %}';
+    var reset_btn = $('#reset-btn');
+    var results_table = $('#results-table');
+    var results_content = $('#results-content');
+
+    function randomInteger(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function get_rows_count() {
+        return input_table.find('tr').length;
+    }
+
+    function generate_row() {
+        var row_index = get_rows_count();
+        var row = '<tr>';
+        row += '<td>';
+        row += '<input name="x_'+ row_index +'" type="number" value="">';
+        row += '</td>';
+        row += '<td>';
+        row += '<input name="y_'+ row_index +'" type="number" value="">';
+        row += '</td>';
+        row += '</tr>';
+        return row
+    }
+
+    function add_point(){
+        // append new row
+        var lastRow = input_table.find('tr:last');
+        lastRow.after(generate_row());
+    }
+
+    add_point_btn.click(function (e){
+        e.preventDefault();
+        add_point();
+    });
+
+    calculate_btn.click(function (e){
+        e.preventDefault();
+        // formData = new FormData(input_form[0]);
+        formData = input_form.serializeArray();
+        //formData = JSON.stringify(formData);
+
+        $.ajax({
+            headers: {'X-CSRFToken': csrftoken},
+            type: 'POST',
+            url: request_url,
+            data: {
+                "formData" : JSON.stringify(formData),
+            },
+            success: function (response){
+                results_content.html(response);
+            },
+        });
+    });
+
+    reset_btn.click(function(e){
+        e.preventDefault();
+        input_table.find('input').val('');
+        results_content.fadeOut("fast", function() {
+           $(this).html('').fadeIn("slow");
+        });
+    });
+
+    calculate_btn.click(function (e){
+        if($("input").filter(function () {return $.trim($(this).val()).length == 0}).length != 0){
+            e.preventDefault();
+            alert('You should provide values for all fields!');
+        }
+    });
+
+    random_btn.click(function (e){
+        e.preventDefault();
+        $.each($('input'), function (e){
+            $(this).val(randomInteger(-5, 5));
+        });
+    });
+
+});
+</script>
+{% endblock %}
